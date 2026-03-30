@@ -1,0 +1,11 @@
+*.parquet
+.tmp/
+__pycache__/
+.ipynb_checkpoints/
+*.log
+credentials/
+.tfstate
+.tfstate.backup
+benchmarking/
+.env
+.DS_Store
