@@ -1,0 +1,32 @@
+steps:
+# Build the Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-<REGION>-docker.pkg.dev/<GCP_PROJECT_ID>/<REPOSITORY_ID>/<IMAGE_NAME>', '.']
+# Push the image to the Aritifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-<REGION>-docker.pkg.dev/<GCP_PROJECT_ID>/<REPOSITORY_ID>/<IMAGE_NAME>']
+# Deploy the image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+  - 'run'
+  - 'deploy'
+  - '<CLOUD_RUN_SERVICE_NAME>'
+  - '--image'
+  - 'us-<REGION>-docker.pkg.dev/<GCP_PROJECT_ID>/<REPOSITORY_ID>/<IMAGE_NAME>'
+  - '--region'
+  - 'us-central1'
+  - '--memory'
+  - '20484Mi' 
+  - '--cpu'
+  - '1'
+  - '--min-instances'
+  - '0'
+  - '--max-instances'
+  - '10'
+  - '--timeout'
+  - '1000s'
+  - '--service-account'
+  - '<SERVICE_ACCOUNT_USERNAME>@<GCP_PROJECT_ID>.iam.gserviceaccount.com'
+images:
+- 'us-<REGION>-docker.pkg.dev/<GCP_PROJECT_ID>/<REPOSITORY_ID>/<IMAGE_NAME>'

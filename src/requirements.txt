@@ -1,0 +1,17 @@
+geojson==3.2.0
+fastapi==0.121.2
+geopandas==1.1.1
+google-cloud==0.34.0
+google-cloud-bigquery==3.38.0
+google-cloud-storage==3.9.0
+numpy==2.3.5
+pandas==2.3.3
+pydantic==2.12.5
+openapi-pydantic==0.5.1
+pytest==9.0.2
+pyproj==3.7.2
+pytz==2025.2
+requests==2.32.5
+shapely==2.1.2
+uvicorn==0.38.0
+db-dtypes==1.5.0
