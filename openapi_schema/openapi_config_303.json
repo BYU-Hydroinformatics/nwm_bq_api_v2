@@ -1,0 +1,2011 @@
+
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CIROH National Water Model API ",
+    "description": "This version of the API dedicatedly serves National Water Model (NWM) data leveraging the efficient retrieval from corresponding BigQuery datasets. It includes endpoints for accessing natively generated operational ('analyses-assim', 'forecasts') and retrospective ('retrospectives') datasets, derived data products ('flow-metrics', 'percentile-flows' and 'return-periods'), flowline geometry ('geometries') data, and reach-based data compilation. Beside reach identifier based extraction, this API also supports geospatial queries, allowing users to define spatial boundaries, location, or alternative identifiers for their data requests. Moreover, the API can extensively validate user inputs with customized error messages and can serve static and dynamic metadata. Please refer to the individual endpoint documentation for more details on how to use each of them to find your required NWM data.",
+    "version": "2.0.0",
+    "x-logo": {
+      "url": "https://ciroh.ua.edu/wp-content/uploads/2022/08/CIROHLogo_200x200.png"
+    }
+  },
+
+  "x-google-api-management": {
+    "backends": {
+      "backend-host": {
+        "address": "<API-BACKEND-URL>",
+        "deadline": 150,
+        "path_translation": "APPEND_PATH_TO_ADDRESS"
+      }
+    }
+  },
+  "x-google-backend": "backend-host",
+
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/docs": {
+      "get": {
+        "summary": "API Documentation",
+        "operationId": "docs",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/openapi.json": {
+      "get": {
+        "summary": "OpenAPI Specification",
+        "operationId": "openapi_specification",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/forecasts": {
+      "get": {
+        "summary": "Forecast Configuration Data",
+        "description": "Access the forecast configuration data for one of the three forecast types at a certain reference time \nagainst one or more reaches from the National Water Model operational dataset either in geospatial\n(geojson or geopackage) or structured (csv or json) format by filtering the data for one or more of \nthe available ensemble members, as well as by filtering the reaches through geospatial location, extent, \nor direct identifier-based parameters.",
+        "operationId": "forecast_configuration_data_forecasts_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          },
+          {
+            "name": "time_zone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The time zone for the provided time parameters and outputs. Default is 'UTC'.",
+              "default": "UTC",
+              "title": "Time Zone",
+              "example": "UTC",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The time zone for the provided time parameters and outputs. Default is 'UTC'.",
+            "example": "US/Mountain"
+          },
+          {
+            "name": "forecast_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The type of forecast to retrieve as a string.",
+              "default": "short_range",
+              "title": "Forecast Type",
+              "example": "short_range",
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ForecastOptions"
+                }
+              ]
+            },
+            "description": "The type of forecast to retrieve as a string.",
+            "example": "short_range"
+          },
+          {
+            "name": "reference_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The reference time of the forecast to retrieve preferably in ISO format (e.g. '2024-01-01T00:00:00'). If not provided, the most recent forecast will be retrieved.",
+              "title": "Reference Time",
+              "example": "2024-01-01T00:00:00",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The reference time of the forecast to retrieve preferably in ISO format (e.g. '2024-01-01T00:00:00'). If not provided, the most recent forecast will be retrieved.",
+            "example": "2024-01-01T00:00:00"
+          },
+          {
+            "name": "ensemble",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string listing ensemble member(s), corresponding to the forecast type, to retrieve. Available ensemble member(s) are only 0 for short_range forecasts, are 0-5 (six) for medium_range forecasts, and are 0-3 (four) for long-range forecasts. If not provided, the average of all available ensemble members will be retrieved.",
+              "title": "Ensemble",
+              "example": "0,1,2,3",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string listing ensemble member(s), corresponding to the forecast type, to retrieve. Available ensemble member(s) are only 0 for short_range forecasts, are 0-5 (six) for medium_range forecasts, and are 0-3 (four) for long-range forecasts. If not provided, the average of all available ensemble members will be retrieved.",
+            "example": "0,1,2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analyses-assim": {
+      "get": {
+        "summary": "Analysis Assimilation Configuration Data",
+        "description": "Access the analysis-assimilation simulation data for one or more of its offset runs against one or\nmore reaches from the National Water Model operational dataset either in geospatial (geojson or geopackage) \nor structured (csv or json) format by filtering the data based on time window and run offset,\nas well as by filtering the reaches through geospatial location, extent, or direct identifier-based \nparameters.",
+        "operationId": "analysis_assimilation_configuration_data_analyses_assim_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          },
+          {
+            "name": "time_zone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The time zone for the provided time parameters and outputs. Default is 'UTC'.",
+              "default": "UTC",
+              "title": "Time Zone",
+              "example": "UTC",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The time zone for the provided time parameters and outputs. Default is 'UTC'.",
+            "example": "US/Mountain"
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The start time of the analysis-assimilation timeseries. If not provided, it will default to one month before the last timestep of the analysis run.",
+              "title": "Start Time",
+              "example": "2022-01-01T00:00:00",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The start time of the analysis-assimilation timeseries. If not provided, it will default to one month before the last timestep of the analysis run.",
+            "example": "2022-01-01T00:00:00"
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The end time of the analysis-assimilation timeseries. If not provided, it will default to the last timestep of the analysis run.",
+              "title": "End Time",
+              "example": "2022-02-01T00:00:00",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The end time of the analysis-assimilation timeseries. If not provided, it will default to the last timestep of the analysis run.",
+            "example": "2022-02-01T00:00:00"
+          },
+          {
+            "name": "run_offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string listing offsets to include. Supported run offsets are: 1, 2, and 3, which correspond to the most recent run (offset 1), the second most recent run (offset 2), and the third most recent run (offset 3).",
+              "default": "1",
+              "title": "Run Offset",
+              "example": "1,2",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string listing offsets to include. Supported run offsets are: 1, 2, and 3, which correspond to the most recent run (offset 1), the second most recent run (offset 2), and the third most recent run (offset 3).",
+            "example": "1,2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/retrospectives": {
+      "get": {
+        "summary": "Retrospective 3 0 Data",
+        "description": "Access the retrospective simulation data from its version 3.0 run of NOAA National Water Model,\nagainst one or more reaches either in geospatial (geojson or geopackage) or structured (csv or json)\nformat by filtering the data based on time window (start and end time), as well as by filtering the \nreaches through geospatial location, extent, or direct identifier-based parameters.",
+        "operationId": "retrospective_3_0_data_retrospectives_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          },
+          {
+            "name": "time_zone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The time zone for the provided time parameters and outputs. Default is 'UTC'.",
+              "default": "UTC",
+              "title": "Time Zone",
+              "example": "UTC",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The time zone for the provided time parameters and outputs. Default is 'UTC'.",
+            "example": "US/Mountain"
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The start time of the retrospective timeseries. If not provided, it will default to one month before the last timestep of the retrospective 3.0 run.",
+              "title": "Start Time",
+              "example": "2020-01-01T00:00:00",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The start time of the retrospective timeseries. If not provided, it will default to one month before the last timestep of the retrospective 3.0 run.",
+            "example": "2020-01-01T00:00:00"
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The end time of the retrospective timeseries. If not provided, it will default to the last timestep of the retrospective 3.0 run.",
+              "title": "End Time",
+              "example": "2020-02-01T00:00:00",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The end time of the retrospective timeseries. If not provided, it will default to the last timestep of the retrospective 3.0 run.",
+            "example": "2020-02-01T00:00:00"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/flow-metrics": {
+      "get": {
+        "summary": "Streamflow Metrics Data",
+        "description": "Access the streamflow metrics (or indices or indicators) data derived from the NOAA National Water Model\nRetrospective 3.0 dataset, against one or more reaches either in geospatial (geojson or shapefile) or\nstructured (csv or json) format by filtering down to specific or all available metrics, as well as by\nfiltering the reaches through geospatial location, extent, or direct identifier-based parameters.",
+        "operationId": "streamflow_metrics_data_flow_metrics_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          },
+          {
+            "name": "metrics",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A comma-separated list of streamflow metrics to include. Supported metric names are: 'monthwise_mean','monthwise_cov','variability_index','slope_fdc','flashiness_index','sevenQ10','mean_annual_7_day_min','baseflow_index','zero_flow_days_n','low_flow_days_n','duration_low_flow_event','high_flow_days_n','duration_high_flow_event','half_flow_date', and 'start_date_flood_season'.",
+              "title": "Metrics",
+              "example": "variability_index,monthwise_cov,slope_fdc",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A comma-separated list of streamflow metrics to include. Supported metric names are: 'monthwise_mean','monthwise_cov','variability_index','slope_fdc','flashiness_index','sevenQ10','mean_annual_7_day_min','baseflow_index','zero_flow_days_n','low_flow_days_n','duration_low_flow_event','high_flow_days_n','duration_high_flow_event','half_flow_date', and 'start_date_flood_season'.",
+            "example": "variability_index,monthwise_cov,slope_fdc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/percentile-flows": {
+      "get": {
+        "summary": "Percentile Streamflows Data",
+        "description": "Access the streamflow magnitude data corresponding to specified or all available percentiles, derived from \nthe daily aggregation of the NOAA National Water Model Retrospective 3.0 dataset, against one or more reaches\neither in geospatial (geojson or shapefile) or structured (csv or json) format by filtering the reaches through \ngeospatial location, extent, or direct identifier-based parameters.",
+        "operationId": "percentile_streamflows_data_percentile_flows_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          },
+          {
+            "name": "percentiles",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A comma-separated list of streamflow percentiles to include. Supported percentile options are: 0, 2, 5, 10, 20, 25, 30, 50, 75, 90, 95, 99, 100.",
+              "title": "Percentiles",
+              "example": "0,25,50,75,100",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A comma-separated list of streamflow percentiles to include. Supported percentile options are: 0, 2, 5, 10, 20, 25, 30, 50, 75, 90, 95, 99, 100.",
+            "example": "0,25,50,75,100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/return-periods": {
+      "get": {
+        "summary": "Flood Return Periods Data",
+        "description": "Access the flood return periods data of one or more reaches derived from the National Water Model\nretrospective dataset either in geospatial (geojson or shapefile) or tabular (csv or json) format \nby filtering the return periods from the six available return periods (2, 5, 10, 25, 50, and 100 year)\nas well as by filtering the reaches through geospatial location, extent, or direct identifier-based \nparameters.",
+        "operationId": "flood_return_periods_data_return_periods_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          },
+          {
+            "name": "return_periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing combination of return periods: 2, 5, 10, 25, 50, and 100",
+              "title": "Return Periods",
+              "example": "10,50,100",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing combination of return periods: 2, 5, 10, 25, 50, and 100",
+            "example": "10,50,100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/geometries": {
+      "get": {
+        "summary": "Reach Geometry Data",
+        "description": "Access the geometries data of one or more reaches from the National Water Model \neither in geospatial (geojson or shapefile) or structured (csv or json) format by filtering \nthrough geospatial location, extent, or direct identifier-based parameters.",
+        "operationId": "reach_geometry_data_geometries_get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+              "title": "Reach Id",
+              "example": "1891586,2927567,3134443,3589508",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated National Water Model reach identifiers. Single reach_id is also allowed.",
+            "example": "1891586,2927567,3134443,3589508"
+          },
+          {
+            "name": "gage_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+              "title": "Gage Id",
+              "example": "13309220,13042500,13295000",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing comma-separated USGS gage identifiers. Single gage_id is also allowed.",
+            "example": "13309220,13042500,13295000"
+          },
+          {
+            "name": "hydroshare_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+              "title": "Hydroshare Id",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A 32-character hexadecimal string representing the HydroShare resource identifier containing a JSON file with specific filename and format.",
+            "example": "643dc03878704a30849536e302bdb2c0"
+          },
+          {
+            "name": "bounding_box",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+              "title": "Bounding Box",
+              "example": "-111.705,40.160,-111.582,40.331",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of comma-separated four coordinates (as per WGS84) representing the bounding box in the format: 'min_lon,min_lat,max_lon,max_lat'",
+            "example": "-111.705,40.160,-111.582,40.331"
+          },
+          {
+            "name": "geom_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+              "title": "Geom Filter",
+              "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string containing GeoJSON, WKT, or WKB representation of the geometry to filter within. Supported geometry types are: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.",
+            "example": "POLYGON ((-111.93525458166658 40.40221765026246, -111.93525458166658 40.37069805865761, -111.88137384735077 40.37069805865761, -111.88137384735077 40.40221765026246, -111.93525458166658 40.40221765026246))"
+          },
+          {
+            "name": "huc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+              "title": "Huc",
+              "example": "160202010500",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A string of digits with length corresponding to valid HUC levels (2, 4, 6, 8, 10, or 12) representing the HUC code to filter data for the reaches within.",
+            "example": "160202010500"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+              "title": "Lon",
+              "example": -111.786835,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Longitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lat' parameter.",
+            "example": -111.786835
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+              "title": "Lat",
+              "example": 40.176187,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Latitude coordinate (as per WGS84) as a decimal degree to filter the reach nearby to this point. Must be provided together with 'lon' parameter.",
+            "example": 40.176187
+          },
+          {
+            "name": "with_buffer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+              "title": "With Buffer",
+              "example": 100,
+              "nullable": true,
+              "type": "number"
+            },
+            "description": "Buffer distance (0 to 1000 meters) to apply when filtering geometries.",
+            "example": 100
+          },
+          {
+            "name": "lowest_stream_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+              "title": "Lowest Stream Order",
+              "example": 1,
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StreamorderOptions"
+                }
+              ]
+            },
+            "description": "The lowest stream order (1 to 10) for the reaches to include (e.g. '10' for tenth-order streams only, '9' for ninth and tenth-order streams only, '2' for second and all upper-order streams, etc.).",
+            "example": 2
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+              "default": "json",
+              "title": "Output Format",
+              "example": "geojson",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The output format of the response data. Supported formats are: 'geojson', 'shapefile', 'json', and 'csv'. Default is 'json'.",
+            "example": "geojson"
+          },
+          {
+            "name": "ordered",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to order the reaches in the output by relevant fields.",
+              "default": false,
+              "title": "Ordered",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to order the reaches in the output by relevant fields.",
+            "example": true
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reaches/{reach_id}": {
+      "get": {
+        "summary": "Reachwise Compiled Data",
+        "description": "Access a compiled set of data for a specific reach identified by its NWM reach_id, in geojson format.\nThe compiled data includes the reach geometry and can include one, more, or all of streamflow metrics,\npercentile flows, forecasts of different types, analysis-assimilation, and flood return periods data.\nThe data is retrieved against a time of reference to look ahead for forecasts and look back for \nanalysis-assimilation data.",
+        "operationId": "reachwise_compiled_data_reaches__reach_id__get",
+        "security": [
+          { "api_key": [] }
+        ],
+        "parameters": [
+          {
+            "name": "reach_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "The reach identifier from the National Water Model or NHDFlowlines COMID from the NHDPlusV2 dataset.",
+              "title": "Reach Id",
+              "example": 1129533
+            },
+            "description": "The reach identifier from the National Water Model or NHDFlowlines COMID from the NHDPlusV2 dataset.",
+            "example": 1129533
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "A comma-separated list of datasets to include in the response. Supported dataset options are: 'analyses_assim', 'forecasts_short_range', 'forecasts_medium_range', 'forecasts_long_range', 'return_periods', 'flow_metrics', and 'percentile_flows'. If not provided, all will be included by default.",
+              "title": "Include",
+              "example": "forecasts_short_range,forecasts_medium_range,forecasts_long_range,analyses_assim,flow_metrics",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "A comma-separated list of datasets to include in the response. Supported dataset options are: 'analyses_assim', 'forecasts_short_range', 'forecasts_medium_range', 'forecasts_long_range', 'return_periods', 'flow_metrics', and 'percentile_flows'. If not provided, all will be included by default.",
+            "example": "forecasts_short_range,flow_metrics"
+          },
+          {
+            "name": "reference_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The reference time for the forecast and analysis-assimilation data to include in the response, preferably in ISO format (e.g. '2024-01-01T00:00:00'). If not provided, the most recent forecast reference time will be used by default. This parameter is only relevant if forecast datasets are included in the request.",
+              "title": "Reference Time",
+              "example": "2020-01-01T00:00:00",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The reference time for the forecast and analysis-assimilation data to include in the response, preferably in ISO format (e.g. '2024-01-01T00:00:00'). If not provided, the most recent forecast reference time will be used by default. This parameter is only relevant if forecast datasets are included in the request.",
+            "example": "2020-01-01T00:00:00"
+          },
+          {
+            "name": "time_zone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "The time zone for the provided reference_time and the forecast and analysis-assimilation data included in the response. Default is 'UTC'.",
+              "default": "UTC",
+              "title": "Time Zone",
+              "example": "UTC",
+              "nullable": true,
+              "type": "string"
+            },
+            "description": "The time zone for the provided reference_time and the forecast and analysis-assimilation data included in the response. Default is 'UTC'.",
+            "example": "US/Mountain"
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Whether to embed metadata with the actual data.",
+              "default": false,
+              "title": "Metadata",
+              "example": true,
+              "nullable": true,
+              "type": "boolean"
+            },
+            "description": "Whether to embed metadata with the actual data.",
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "key",
+        "in": "query"
+      }
+    },
+    "schemas": {
+      "ForecastOptions": {
+        "type": "string",
+        "enum": [
+          "short_range",
+          "medium_range",
+          "long_range"
+        ],
+        "title": "ForecastOptions"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "StreamorderOptions": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "title": "StreamorderOptions"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
