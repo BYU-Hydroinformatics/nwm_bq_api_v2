@@ -6,6 +6,5 @@ __pycache__/
 credentials/
 .tfstate
 .tfstate.backup
-benchmarking/
 .env
 .DS_Store
